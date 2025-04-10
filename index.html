@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <title>С Днём Рождения, Одина!</title>
+  <title>С Днём Рождения, Одина !</title>
 
   <!-- Подключаем красивый рукописный шрифт -->
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -11,7 +11,8 @@
   <style>
     /* Сбрасываем отступы у body */
     * {
-      margin: 0; padding: 0;
+      margin: 0; 
+      padding: 0;
       box-sizing: border-box;
     }
 
@@ -42,7 +43,7 @@
       50% { background-position: 100% 50%; }
     }
 
-    /* Основной контейнер под canvas (уходим за z-индекс, чтобы текст был сверху) */
+    /* Основной контейнер под canvas */
     #obal {
       position: absolute;
       z-index: 0;
@@ -57,9 +58,9 @@
       height: 100%;
     }
 
-    /* Контейнер с поздравлением, поверх canvas */
+    /* Контейнер с поздравлением, над canvas */
     .centered-text {
-      position: relative; /* остаёмся \"над\" canvas */
+      position: relative; 
       z-index: 1;
       display: flex;
       flex-direction: column;
@@ -77,8 +78,8 @@
     /* Главный заголовок */
     h1 {
       font-family: 'Dancing Script', cursive;
-      font-size: 4rem;        /* Крупнее */
-      margin-bottom: 1rem;    /* Отступ снизу */
+      font-size: 4rem;  /* Крупнее */
+      margin-bottom: 1rem;
       text-shadow: 0 0 10px #ff99aa;
       opacity: 0;
       animation: fadeInDown 2.5s ease forwards;
@@ -130,7 +131,7 @@
     <h2 class="greeting">Пусть этот день принесёт тебе много радости, улыбок и вдохновения!</h2>
   </div>
 
-  <!-- Скрипт анимации «червячков», рисующих сердце» -->
+  <!-- Скрипт анимации «червячков», рисующих сердце», ускоренный -->
   <script>
     var c = document.getElementById('c');
     var a = c.getContext('2d');
@@ -144,32 +145,32 @@
     var O = c.width;
     var Q = c.height;
 
-    var v = 32; 
+    var v = 32;   // Кол-во «червячков» и узлов
     var M = Math;
     var R = M.random;
     var C = M.cos;
-    var Y = 6.3; 
+    var Y = 6.3;  // ~ 2*PI
 
-    // Координаты сердца (MathWorld HeartCurve)
+    // Создаем координаты сердца (MathWorld HeartCurve)
     for (var i = 0; i < Y; i += 0.2) {
       h.push([
-        O/2 + 180 * M.pow(M.sin(i), 3),
-        Q/2 + 10 * (-(15*C(i) - 5*C(2*i) - 2*C(3*i) - C(4*i)))
+        O / 2 + 180 * M.pow(M.sin(i), 3),
+        Q / 2 + 10 * (-(15 * C(i) - 5 * C(2*i) - 2 * C(3*i) - C(4*i)))
       ]);
     }
 
-    // Генерируем \"червячки\"
+    // Генерируем «v» червячков, увеличивая скорость
     var i = 0;
     while (i < v) {
       var x = R() * O;
       var y = R() * Q;
-    
+
       var H = i / v * 80 + 280;
       var S = R() * 40 + 60;
       var B = R() * 60 + 20;
-    
+
       var f = [];
-    
+
       var k = 0;
       while (k < v) {
         f[k++] = {
@@ -178,16 +179,18 @@
           X: 0,
           Y: 0,
           R: (1 - k / v) + 1,
-          S: R() + 1,
+          // Здесь повышаем ускорение:
+          S: (R() * 2) + 1.5,    // было (R() + 1), теперь быстрее
           q: ~~(R() * v),
           D: i % 2 * 2 - 1,
-          F: R() * 0.2 + 0.7,
-          // убрали экранирование, оставили обычную строку
+          // Уменьшаем трение, чтобы частицы дольше летали:
+          F: (R() * 0.15) + 0.65, // было (R() * 0.2 + 0.7)
           f: "hsla(" + ~~H + "," + ~~S + "%," + ~~B + "%,0.1)"
         };
       }
       e[i++] = f;
     }
+
     function renderDot(dot) {
       a.fillStyle = dot.f;
       a.beginPath();
@@ -197,7 +200,8 @@
     }
 
     function loop() {
-      a.fillStyle = "rgba(0, 0, 0, 0.2)";
+      // Полупрозрачный фон
+      a.fillStyle = "rgba(0,0,0,0.2)";
       a.fillRect(0, 0, O, Q);
 
       var i = v;
@@ -209,25 +213,34 @@
         var E = u.y - q[1];
         var G = M.sqrt(D*D + E*E);
 
+        // Если дошли до узла сердца
         if (G < 10) {
           if (R() > 0.95) {
             u.q = ~~(R() * v);
           } else {
-            if (R() > 0.99) u.D *= -1;
+            if (R() > 0.99) {
+              u.D *= -1;
+            }
             u.q += u.D;
             u.q %= v;
             if (u.q < 0) u.q += v;
           }
         }
 
+        // Применяем ускорение
         u.X += -D / G * u.S;
         u.Y += -E / G * u.S;
+
+        // Обновляем координаты
         u.x += u.X;
         u.y += u.Y;
         renderDot(u);
+
+        // Применяем трение
         u.X *= u.F;
         u.Y *= u.F;
 
+        // Притягиваем все остальные точки
         var k = 0;
         while (k < v - 1) {
           var T = f[k];
@@ -243,14 +256,13 @@
       requestAnimationFrame(animate);
       loop();
     })();
-
   </script>
+
+  <!-- Таймер на 6 секунд, затем переход на другую страницу -->
   <script>
-    // Задержка 5 секунд (5000 мс)
     setTimeout(function() {
       window.location.href = "birthday-cake.html";
     }, 6000);
   </script>
-  
 </body>
 </html>
