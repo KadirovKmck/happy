@@ -2,29 +2,31 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <title>С Днём Рождения, Одина !</title>
+  <title>С Днём Рождения, Одина + Музыка!</title>
 
   <!-- Подключаем красивый рукописный шрифт -->
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 
   <style>
-    /* Сбрасываем отступы у body */
+    /* Сбрасываем отступы, занимаем весь экран */
     * {
-      margin: 0; 
+      margin: 0;
       padding: 0;
       box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden; /* без полос прокрутки */
     }
 
     /* Анимированный плавный градиент в фоне */
     body {
-      width: 100%;
-      height: 100vh;
       background: linear-gradient(135deg, #000, #3c0000, #000);
       background-size: 400% 400%;
       animation: bg-flow 14s ease-in-out infinite;
 
-      /* Для flex-центровки контейнера */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -33,17 +35,15 @@
       font-family: sans-serif;
       text-align: center;
       scrollbar-width: none;
-      overflow: hidden;
       position: relative;
       font-size: 3em; /* Общая относительная величина */
     }
-
     @keyframes bg-flow {
       0%, 100% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
     }
 
-    /* Основной контейнер под canvas */
+    /* Холст для анимации сердца */
     #obal {
       position: absolute;
       z-index: 0;
@@ -58,7 +58,7 @@
       height: 100%;
     }
 
-    /* Контейнер с поздравлением, над canvas */
+    /* Текст в центре */
     .centered-text {
       position: relative; 
       z-index: 1;
@@ -75,15 +75,15 @@
       }
     }
 
-    /* Главный заголовок */
+    /* Заголовок */
     h1 {
       font-family: 'Dancing Script', cursive;
-      font-size: 4rem;  /* Крупнее */
+      font-size: 4rem;  
       margin-bottom: 1rem;
       text-shadow: 0 0 10px #ff99aa;
       opacity: 0;
       animation: fadeInDown 2.5s ease forwards;
-      animation-delay: 1s; /* Задержка появления */
+      animation-delay: 1s; 
     }
     @keyframes fadeInDown {
       0% {
@@ -96,7 +96,7 @@
       }
     }
 
-    /* Второй текст — поздравление */
+    /* Подзаголовок */
     h2.greeting {
       font-family: 'Dancing Script', cursive;
       font-size: 2rem;
@@ -117,41 +117,60 @@
       }
     }
 
+    /* Скрываем iframe или делаем очень маленьким, если хотим «фон» */
+    .music {
+      position: absolute;
+      width: 1px; /* Можно 0, но иногда даём 1px, чтобы iframe не ломался */
+      height: 1px;
+      left: -9999px; 
+      top: -9999px;
+      /* или, если хочешь, сделай display:none, но тогда некоторые браузеры могут не загружать */
+    }
   </style>
 </head>
 <body>
-  <!-- Блок с canvas (рисует сердце) -->
+  <!-- Canvas с сердцем -->
   <div id="obal">
     <canvas id="c"></canvas>
   </div>
 
-  <!-- Контейнер с центровкой текста -->
+  <!-- Текст -->
   <div class="centered-text">
     <h1>С Днём Рождения, Одина!</h1>
-    <h2 class="greeting">Пусть этот день принесёт тебе много радости, улыбок и вдохновения!</h2>
+    <h2 class="greeting">Пусть этот день принесёт тебе много радости и улыбок!</h2>
   </div>
 
-  <!-- Скрипт анимации «червячков», рисующих сердце», ускоренный -->
+  <!-- Встраиваем YouTube в скрытом iframe -->
+  <!-- Параметры: autoplay=1, loop=1, controls=0, modestbranding=1,
+       mute=0 (но авто-плей со звуком не гарантирован) -->
+  <iframe 
+    class="music"
+    src="https://www.youtube.com/embed/iislwy5AIjw?autoplay=1&loop=1&playlist=iislwy5AIjw&controls=0&mute=0"
+    frameborder="0"
+    allow="autoplay; encrypted-media"
+    allowfullscreen>
+  </iframe>
+
+  <!-- Скрипт анимации сердца (ускоренный) -->
   <script>
     var c = document.getElementById('c');
     var a = c.getContext('2d');
 
-    // Устанавливаем canvas во весь экран
     c.width = innerWidth;
     c.height = innerHeight;
 
-    var e = [];  // trails
-    var h = [];  // heart path
+    var e = [];
+    var h = [];
     var O = c.width;
     var Q = c.height;
 
-    var v = 32;   // Кол-во «червячков» и узлов
+    var v = 32; 
     var M = Math;
     var R = M.random;
     var C = M.cos;
-    var Y = 6.3;  // ~ 2*PI
+    var Y = 6.3;
 
-    // Создаем координаты сердца (MathWorld HeartCurve)
+    // HeartCurve
     for (var i = 0; i < Y; i += 0.2) {
       h.push([
         O / 2 + 180 * M.pow(M.sin(i), 3),
@@ -159,7 +178,6 @@
       ]);
     }
 
-    // Генерируем «v» червячков, увеличивая скорость
     var i = 0;
     while (i < v) {
       var x = R() * O;
@@ -179,12 +197,10 @@
           X: 0,
           Y: 0,
           R: (1 - k / v) + 1,
-          // Здесь повышаем ускорение:
-          S: (R() * 2) + 1.5,    // было (R() + 1), теперь быстрее
+          S: (R() * 2) + 1.5,     // ускорили
           q: ~~(R() * v),
           D: i % 2 * 2 - 1,
-          // Уменьшаем трение, чтобы частицы дольше летали:
-          F: (R() * 0.15) + 0.65, // было (R() * 0.2 + 0.7)
+          F: (R() * 0.15) + 0.65, // меньше трение
           f: "hsla(" + ~~H + "," + ~~S + "%," + ~~B + "%,0.1)"
         };
       }
@@ -200,7 +216,6 @@
     }
 
     function loop() {
-      // Полупрозрачный фон
       a.fillStyle = "rgba(0,0,0,0.2)";
       a.fillRect(0, 0, O, Q);
 
@@ -213,34 +228,26 @@
         var E = u.y - q[1];
         var G = M.sqrt(D*D + E*E);
 
-        // Если дошли до узла сердца
         if (G < 10) {
           if (R() > 0.95) {
             u.q = ~~(R() * v);
           } else {
-            if (R() > 0.99) {
-              u.D *= -1;
-            }
+            if (R() > 0.99) u.D *= -1;
             u.q += u.D;
             u.q %= v;
             if (u.q < 0) u.q += v;
           }
         }
 
-        // Применяем ускорение
         u.X += -D / G * u.S;
         u.Y += -E / G * u.S;
-
-        // Обновляем координаты
         u.x += u.X;
         u.y += u.Y;
         renderDot(u);
 
-        // Применяем трение
         u.X *= u.F;
         u.Y *= u.F;
 
-        // Притягиваем все остальные точки
         var k = 0;
         while (k < v - 1) {
           var T = f[k];
@@ -258,7 +265,7 @@
     })();
   </script>
 
-  <!-- Таймер на 6 секунд, затем переход на другую страницу -->
+  <!-- Таймер: через 6 секунд переходим на другую страницу (birthday-cake.html) -->
   <script>
     setTimeout(function() {
       window.location.href = "birthday-cake.html";
