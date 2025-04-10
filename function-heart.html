@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>С Днём Рождения, Одина!</title>
+
+  <!-- Подключаем красивый рукописный шрифт -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Сбрасываем отступы у body */
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Анимированный плавный градиент в фоне */
+    body {
+      width: 100%;
+      height: 100vh;
+      background: linear-gradient(135deg, #000, #3c0000, #000);
+      background-size: 400% 400%;
+      animation: bg-flow 14s ease-in-out infinite;
+
+      /* Для flex-центровки контейнера */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+      scrollbar-width: none;
+      overflow: hidden;
+      position: relative;
+      font-size: 3em; /* Общая относительная величина */
+    }
+
+    @keyframes bg-flow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Основной контейнер под canvas (уходим за z-индекс, чтобы текст был сверху) */
+    #obal {
+      position: absolute;
+      z-index: 0;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Контейнер с поздравлением, поверх canvas */
+    .centered-text {
+      position: relative; /* остаёмся \"над\" canvas */
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: fadeInContainer 1.5s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeInContainer {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Главный заголовок */
+    h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 4rem;        /* Крупнее */
+      margin-bottom: 1rem;    /* Отступ снизу */
+      text-shadow: 0 0 10px #ff99aa;
+      opacity: 0;
+      animation: fadeInDown 2.5s ease forwards;
+      animation-delay: 1s; /* Задержка появления */
+    }
+    @keyframes fadeInDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Второй текст — поздравление */
+    h2.greeting {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2rem;
+      color: #fff;
+      text-shadow: 0 0 8px #ff99aa;
+      opacity: 0;
+      animation: fadeInUp 2.5s ease forwards;
+      animation-delay: 2.5s; /* Позже, чем заголовок */
+    }
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Блок с canvas (рисует сердце) -->
+  <div id="obal">
+    <canvas id="c"></canvas>
+  </div>
+
+  <!-- Контейнер с центровкой текста -->
+  <div class="centered-text">
+    <h1>С Днём Рождения, Одина!</h1>
+    <h2 class="greeting">Пусть этот день принесёт тебе много радости, улыбок и вдохновения!</h2>
+  </div>
+
+  <!-- Скрипт анимации «червячков», рисующих сердце» -->
+  <script>
+    var c = document.getElementById('c');
+    var a = c.getContext('2d');
+
+    // Устанавливаем canvas во весь экран
+    c.width = innerWidth;
+    c.height = innerHeight;
+
+    var e = [];  // trails
+    var h = [];  // heart path
+    var O = c.width;
+    var Q = c.height;
+
+    var v = 32; 
+    var M = Math;
+    var R = M.random;
+    var C = M.cos;
+    var Y = 6.3; 
+
+    // Координаты сердца (MathWorld HeartCurve)
+    for (var i = 0; i < Y; i += 0.2) {
+      h.push([
+        O/2 + 180 * M.pow(M.sin(i), 3),
+        Q/2 + 10 * (-(15*C(i) - 5*C(2*i) - 2*C(3*i) - C(4*i)))
+      ]);
+    }
+
+    // Генерируем \"червячки\"
+    var i = 0;
+    while (i < v) {
+      var x = R() * O;
+      var y = R() * Q;
+    
+      var H = i / v * 80 + 280;
+      var S = R() * 40 + 60;
+      var B = R() * 60 + 20;
+    
+      var f = [];
+    
+      var k = 0;
+      while (k < v) {
+        f[k++] = {
+          x: x,
+          y: y,
+          X: 0,
+          Y: 0,
+          R: (1 - k / v) + 1,
+          S: R() + 1,
+          q: ~~(R() * v),
+          D: i % 2 * 2 - 1,
+          F: R() * 0.2 + 0.7,
+          // убрали экранирование, оставили обычную строку
+          f: "hsla(" + ~~H + "," + ~~S + "%," + ~~B + "%,0.1)"
+        };
+      }
+      e[i++] = f;
+    }
+    function renderDot(dot) {
+      a.fillStyle = dot.f;
+      a.beginPath();
+      a.arc(dot.x, dot.y, dot.R, 0, Y, true);
+      a.closePath();
+      a.fill();
+    }
+
+    function loop() {
+      a.fillStyle = "rgba(0, 0, 0, 0.2)";
+      a.fillRect(0, 0, O, Q);
+
+      var i = v;
+      while (i--) {
+        var f = e[i];
+        var u = f[0];
+        var q = h[u.q];
+        var D = u.x - q[0];
+        var E = u.y - q[1];
+        var G = M.sqrt(D*D + E*E);
+
+        if (G < 10) {
+          if (R() > 0.95) {
+            u.q = ~~(R() * v);
+          } else {
+            if (R() > 0.99) u.D *= -1;
+            u.q += u.D;
+            u.q %= v;
+            if (u.q < 0) u.q += v;
+          }
+        }
+
+        u.X += -D / G * u.S;
+        u.Y += -E / G * u.S;
+        u.x += u.X;
+        u.y += u.Y;
+        renderDot(u);
+        u.X *= u.F;
+        u.Y *= u.F;
+
+        var k = 0;
+        while (k < v - 1) {
+          var T = f[k];
+          var N = f[++k];
+          N.x -= (N.x - T.x) * 0.7;
+          N.y -= (N.y - T.y) * 0.7;
+          renderDot(N);
+        }
+      }
+    }
+
+    (function animate() {
+      requestAnimationFrame(animate);
+      loop();
+    })();
+
+  </script>
+  <script>
+    // Задержка 5 секунд (5000 мс)
+    setTimeout(function() {
+      window.location.href = "birthday-cake.html";
+    }, 6000);
+  </script>
+  
+</body>
+</html>
