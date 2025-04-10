@@ -1,93 +1,257 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <title>С Днём Рождения, Одина + Музыка!</title>
+  <meta charset="UTF-8" />
+  <title>Happy Birthday — Single Page with Music & Cake</title>
 
-  <!-- Подключаем красивый рукописный шрифт -->
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <!-- Beautiful handwritten font -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
 
   <style>
-    /* ... те же стили, что и у тебя, я их сокращу ... */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; }
-    body {
+    /* Reset basics */
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden; /* no scrollbars */
+      font-family: sans-serif;
+    }
+
+    /* Both screens are absolutely positioned and fill the viewport */
+    .screen {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: none; /* hidden by default */
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    /* ---------- Screen 1 (Hearts animation) ---------- */
+    .screen1 {
+      display: flex; /* show screen1 by default */
       background: linear-gradient(135deg, #000, #3c0000, #000);
       background-size: 400% 400%;
       animation: bg-flow 14s ease-in-out infinite;
-      display: flex; justify-content: center; align-items: center;
-      color: #fff; font-family: sans-serif; text-align: center;
-      position: relative; font-size: 3em; scrollbar-width: none;
+      color: #fff;
     }
     @keyframes bg-flow {
       0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
+      50%      { background-position: 100% 50%; }
     }
-    #obal { position: absolute; z-index: 0; top: 0; left: 0; width: 100%; height: 100%; }
-    canvas { display: block; width: 100%; height: 100%; }
 
-    .centered-text {
-      position: relative; z-index: 1; display: flex;
-      flex-direction: column; align-items: center; justify-content: center;
-      animation: fadeInContainer 1.5s ease forwards; opacity: 0;
+    /* Canvas with hearts behind text */
+    #heartCanvasWrapper {
+      position: absolute;
+      z-index: 0;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
     }
-    @keyframes fadeInContainer { to { opacity: 1; } }
+    #c {
+      width: 100%; height: 100%;
+      display: block;
+    }
 
-    h1 {
+    /* Text & button in screen1 */
+    .screen1-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 2s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    h1.title {
       font-family: 'Dancing Script', cursive;
-      font-size: 4rem; margin-bottom: 1rem;
-      text-shadow: 0 0 10px #ff99aa; opacity: 0;
-      animation: fadeInDown 2.5s ease forwards; animation-delay: 1s;
+      font-size: 3rem;
+      margin-bottom: 0.5em;
+      text-shadow: 0 0 10px #ff99aa;
     }
-    @keyframes fadeInDown {
-      0%   { opacity: 0; transform: translateY(-50px); }
-      100% { opacity: 1; transform: translateY(0);      }
-    }
-    h2.greeting {
+    .greeting {
       font-family: 'Dancing Script', cursive;
-      font-size: 2rem; color: #fff; text-shadow: 0 0 8px #ff99aa;
-      opacity: 0; animation: fadeInUp 2.5s ease forwards;
-      animation-delay: 2.5s;
+      font-size: 1.5rem;
+      margin-bottom: 1.5em;
+      text-shadow: 0 0 8px #ff99aa;
+      text-align: center;
+      max-width: 90%;
     }
-    @keyframes fadeInUp {
-      0%   { opacity: 0; transform: translateY(50px); }
-      100% { opacity: 1; transform: translateY(0);    }
-    }
-
-    /* Кнопка для включения музыки */
     .music-button {
-      margin-top: 1rem;
-      font-size: 0.5em; /* т.к. body=3em => 0.5em=1.5rem */
-      padding: 0.5em 1em;
-      background: #ff88a0; color: #fff; border: none;
-      cursor: pointer; border-radius: 8px;
-      text-shadow: 0 0 4px rgba(0,0,0,0.3);
+      font-size: 1rem;
+      padding: 0.7em 1.2em;
+      background: #ff88a0; color: #fff;
+      border: none; cursor: pointer;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       transition: transform 0.2s;
     }
     .music-button:hover {
-      transform: scale(1.1);
+      transform: scale(1.05);
     }
 
+    /* ---------- Screen 2 (Birthday-cake animation) ---------- */
+    .screen2 {
+      background: #ee9ca7;
+      /* flex layout for center */
+      display: flex; 
+    }
+
+    .cake {
+      background: #ffffff;
+      border-radius: 10px;
+      position: absolute;
+      top: 228px;
+      left: 50%;
+      margin-left: -2.4px;
+      margin-top: -8.33333333px;
+      width: 5px;
+      height: 35px;
+      transform: translateY(-300px);
+      backface-visibility: hidden;
+      animation: in 500ms 6s ease-out forwards;
+    }
+    .cake:after,
+    .cake:before {
+      background: rgba(255, 0, 0, 0.4);
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 2.22222222px;
+    }
+    .cake:after { top: 25%; left: 0; }
+    .cake:before { top: 45%; left: 0; }
+
+    .fuego {
+      border-radius: 100%;
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      margin-left: -2.6px;
+      width: 6.66666667px;
+      height: 18px;
+    }
+    .fuego:nth-child(1) {
+      animation: fuego 2s 6.5s infinite;
+    }
+    .fuego:nth-child(2) {
+      animation: fuego 1.5s 6.5s infinite;
+    }
+    .fuego:nth-child(3) {
+      animation: fuego 1s 6.5s infinite;
+    }
+    .fuego:nth-child(4) {
+      animation: fuego 0.5s 6.5s infinite;
+    }
+    .fuego:nth-child(5) {
+      animation: fuego 0.2s 6.5s infinite;
+    }
+
+    @keyframes fuego {
+      0%, 100% {
+        background: rgba(254, 248, 97, 0.5);
+        box-shadow: 0 0 40px 10px rgba(248, 233, 209, 0.2);
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        background: rgba(255, 50, 0, 0.1);
+        box-shadow: 0 0 40px 20px rgba(248, 233, 209, 0.2);
+        transform: translateY(-20px) scale(0);
+      }
+    }
+    @keyframes in { to { transform: translateY(0); } }
+
+    .text-cake {
+      color: #8b6a60;
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      font-style: italic;
+      text-align: center;
+      margin-top: 200px; /* so it doesn't overlap the candle */
+    }
+    .text-cake h1 {
+      font-size: 1.4em;
+      margin-bottom: 0.3em;
+    }
+    .name {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    /* We'll keep the SVG at a certain size */
+    #cakeSVG {
+      width: 200px; height: 500px;
+    }
+
+    /* Minimal fade in for screen2 */
+    .screen2-content {
+      animation: fadeInScreen2 1.5s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeInScreen2 {
+      to { opacity: 1; }
+    }
+
+    /* Hide the iframe initially (1x1 px, out of viewport).
+       We only create it once user clicks the button. */
+    #musicIframe {
+      position: absolute;
+      width: 1px; height: 1px;
+      left: -9999px; top: -9999px;
+    }
   </style>
 </head>
 <body>
-  <!-- Canvas (сердце) -->
-  <div id="obal">
-    <canvas id="c"></canvas>
+
+  <!-- =============== SCREEN 1: HEART ANIMATION + TEXT + MUSIC BUTTON =============== -->
+  <div class="screen screen1" id="screen1">
+    <!-- Canvas in background for hearts -->
+    <div id="heartCanvasWrapper">
+      <canvas id="c"></canvas>
+    </div>
+
+    <!-- Text + button in front -->
+    <div class="screen1-content">
+      <h1 class="title">С Днём Рождения, Одина!</h1>
+      <div class="greeting">
+        Пусть этот день принесёт тебе много радости, улыбок и вдохновения!
+      </div>
+      <button class="music-button" onclick="playMusic()">Включить музыку</button>
+    </div>
   </div>
 
-  <!-- Текст -->
-  <div class="centered-text">
-    <h1>С Днём Рождения, Одина!</h1>
-    <h2 class="greeting">Пусть этот день принесёт тебе много радости и улыбок!</h2>
+  <!-- =============== SCREEN 2: BIRTHDAY CAKE ANIMATION =============== -->
+  <div class="screen screen2" id="screen2">
+    <!-- Candle flame elements -->
+    <div class="cake">
+      <div class="fuego"></div>
+      <div class="fuego"></div>
+      <div class="fuego"></div>
+      <div class="fuego"></div>
+      <div class="fuego"></div>
+    </div>
+    <!-- The cake SVG -->
+    <svg id="cakeSVG" x="0px" y="0px" viewBox="0 0 200 500">
+      <!-- Insert all your paths and animations from birthday-cake.html here -->
+      <path fill="#a88679" d="M173.667-13.94c-49.298,0-102.782,0-147.334,0c-3.999,0-4-16.002,0-16.002
+         ..."></path>
+      <!-- keep adding the rest of your <path> and <animate> if needed -->
+    </svg>
 
-    <!-- Кнопка «Включить музыку» -->
-    <button class="music-button" onclick="playMusic()">Включить музыку</button>
+    <div class="text-cake screen2-content">
+      <h1>happy birthday!</h1>
+      <p class="name">Odina</p>
+    </div>
   </div>
 
-  <!-- Скрипт анимации сердца -->
   <script>
+    /* ========== HEART ANIMATION ON SCREEN 1 ========== */
     var c = document.getElementById('c');
     var a = c.getContext('2d');
 
@@ -105,20 +269,21 @@
     var C = M.cos;
     var Y = 6.3;
 
-    // HeartCurve
+    // Create heart curve coords
     for (var i = 0; i < Y; i += 0.2) {
       h.push([
-        O / 2 + 180 * M.pow(M.sin(i), 3),
-        Q / 2 + 10 * (-(15*C(i) - 5*C(2*i) - 2*C(3*i) - C(4*i)))
+        O/2 + 180 * M.pow(M.sin(i), 3),
+        Q/2 + 10 * (-(15*C(i) - 5*C(2*i) - 2*C(3*i) - C(4*i)))
       ]);
     }
 
+    // Generate wormy lines
     var i = 0;
     while (i < v) {
       var x = R() * O;
       var y = R() * Q;
 
-      var H = i / v * 80 + 280;
+      var H = i/v * 80 + 280;
       var S = R() * 40 + 60;
       var B = R() * 60 + 20;
 
@@ -129,13 +294,12 @@
         f[k++] = {
           x: x,
           y: y,
-          X: 0,
-          Y: 0,
+          X: 0, Y: 0,
           R: (1 - k/v) + 1,
-          S: (R() * 2) + 1.5,   
+          S: (R() * 2) + 1.5,     // faster
           q: ~~(R() * v),
           D: i % 2 * 2 - 1,
-          F: (R() * 0.15) + 0.65,
+          F: (R() * 0.15) + 0.65, // lower friction
           f: "hsla(" + ~~H + "," + ~~S + "%," + ~~B + "%,0.1)"
         };
       }
@@ -184,7 +348,7 @@
         u.Y *= u.F;
 
         var k = 0;
-        while (k < v-1) {
+        while (k < v - 1) {
           var T = f[k];
           var N = f[++k];
           N.x -= (N.x - T.x) * 0.7;
@@ -194,39 +358,42 @@
       }
     }
 
+    // Start the animation loop
     (function animate() {
       requestAnimationFrame(animate);
       loop();
     })();
 
-    // Функция, которая создаёт iframe при клике
+
+    /* ========== SWITCH SCREENS AFTER 6s ========== */
+    setTimeout(function() {
+      // Hide screen1, show screen2
+      document.getElementById('screen1').style.display = 'none';
+      document.getElementById('screen2').style.display = 'flex';
+    }, 6000);
+
+    /* ========== MUSIC (YouTube) ========== */
     function playMusic() {
-      // Если уже создали iframe — дальше не делаем
+      // If we already created the iframe, do nothing
       if (document.getElementById('musicIframe')) return;
 
-      // Создаём iframe YouTube динамически
+      // Create the hidden iframe
       var iframe = document.createElement('iframe');
       iframe.id = 'musicIframe';
-      iframe.className = 'music';
-      // Параметры: autoplay=1, loop=1, playlist=iislwy5AIjw, controls=0, mute=0
       iframe.src = "https://www.youtube.com/embed/iislwy5AIjw?autoplay=1&loop=1&playlist=iislwy5AIjw&controls=0&mute=0";
-      iframe.frameBorder = "0";
       iframe.allow = "autoplay; encrypted-media";
+      iframe.frameBorder = "0";
+
+      // Hide the iframe so it doesn't show on the page
       iframe.style.width = '1px';
       iframe.style.height = '1px';
       iframe.style.position = 'absolute';
       iframe.style.left = '-9999px';
       iframe.style.top = '-9999px';
 
+      // Append to body => it should start playing IF user just clicked
       document.body.appendChild(iframe);
     }
   </script>
-
-  <script>
-    setTimeout(function() {
-      window.location.href = 'birthday-cake.html';
-    }, 6000);
-  </script>
-
 </body>
 </html>
