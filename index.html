@@ -302,6 +302,37 @@
   </script>
 
   <script>
+    // Показываем первый экран (screen1) сразу (сделали display:flex в CSS),
+    // скрываем второй (screen2) (display:none) — сделано в CSS.
+
+    // Через 6 секунд переключаемся на screen2
+    setTimeout(function() {
+      document.getElementById('screen1').style.display = 'none';
+      document.getElementById('screen2').style.display = 'flex';
+    }, 6000);
+
+    // Функция, создающая iframe с музыкой после клика
+    function playMusic() {
+      // Если уже создали, повторно не делаем
+      if (document.getElementById('musicIframe')) return;
+
+      var iframe = document.createElement('iframe');
+      iframe.id = 'musicIframe';
+      // Прячем, чтобы не мешало
+      iframe.style.width = '1px';
+      iframe.style.height = '1px';
+      iframe.style.position = 'absolute';
+      iframe.style.left = '-9999px';
+      iframe.style.top = '-9999px';
+
+      // YouTube-ссылка: autoplay=1, loop=1, playlist=..., controls=0
+      iframe.src = "https://www.youtube.com/embed/iislwy5AIjw?autoplay=1&loop=1&playlist=iislwy5AIjw&controls=0&mute=0";
+      iframe.allow = "autoplay; encrypted-media";
+
+      document.body.appendChild(iframe);
+    }
+  </script>
+  <script>
     setTimeout(function() {
       window.location.href = 'birthday-cake.html';
     }, 6000);
